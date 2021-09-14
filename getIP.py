@@ -1,6 +1,8 @@
 import socket
 import re
 import threading
+import datetime
+
 
 def get_host_ip():
     """
@@ -27,27 +29,9 @@ def is_port_open(ip, port):
         s.close()
         return False
 
-def detect_active_host():
-    ip = get_host_ip()
-    active_hosts = []
-    for i in range(0,256):
-        ip_tested =  re.sub("\d{1,3}$",str(i),ip)
-        ip_open_flag = is_port_open(ip_tested,8848)
-        if ip_open_flag == True:
-            active_hosts.append(ip_tested)
-    
-    return active_hosts
 
-
- 
-
-if __name__ == '__main__':
-    ip = get_host_ip()
-    port = 8848
-
+def open_multithreaded_detect_ip(ip,port):
     threads = []
-    active_hosts = []
-
     for i in range(0,256):
         ip_tested =  re.sub("\d{1,3}$",str(i),ip)
         t = threading.Thread(target=is_port_open,args=(ip_tested,port))
@@ -57,4 +41,21 @@ if __name__ == '__main__':
     for t in threads:
         t.join()
     
+
+
+if __name__ == '__main__':
+    starttime = datetime.datetime.now()
+
+    ip = get_host_ip()
+    port = 8848
+    active_hosts = []
+    open_multithreaded_detect_ip(ip,port)
     print(active_hosts)
+    
+    
+
+#long running
+
+    endtime = datetime.datetime.now()
+
+    print (endtime - starttime)
